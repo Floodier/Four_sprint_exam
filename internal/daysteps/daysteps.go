@@ -3,7 +3,8 @@ package daysteps
 import (
 	"errors"
 	"fmt"
-	"spentcalories"
+	"four_sprint_exam/internal/spentcalories"
+	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -22,44 +23,44 @@ func parsePackage(data string) (int, time.Duration, error) {
 	if len(info) != 2 {
 		return 0, 0, errors.New("неверный формат данных. Ожидается: шаги,время")
 	}
-	stepsInfo := strings.TrimSpace(info[0])
+	stepsInfo := info[0]
 	steps, err := strconv.Atoi(stepsInfo)
 	if err != nil {
-		return 0, 0, fmt.Errorf("ошибка в данных шагов %v", err)
+		return 0, 0, fmt.Errorf("%v", err)
 	}
 	if steps <= 0 {
-		return 0, 0, fmt.Errorf("количество шагов <= 0")
+		return 0, 0, fmt.Errorf("%v", err)
 	}
-	durationInfo := strings.TrimSpace(info[1])
+	durationInfo := info[1]
 	duration, err := time.ParseDuration(durationInfo)
 	if err != nil {
-		return 0, 0, fmt.Errorf("ошибка в данных времени %v", err)
+		return 0, 0, fmt.Errorf("%v", err)
 	}
 	if duration <= 0 {
-		return 0, 0, fmt.Errorf("продолжительность времени <= 0")
+		return 0, 0, fmt.Errorf("%v", err)
 	}
-	return steps, duration, nil
+	return steps, duration, err
 }
 
 func DayActionInfo(data string, weight, height float64) string {
-	steps, _, err := parsePackage(data)
+	steps, duration, err := parsePackage(data)
 	if err != nil {
-		return fmt.Sprintf("ошибка %v", err)
+		log.Println(err)
+		return ""
 	}
 	if steps <= 0 {
-		return fmt.Sprint("")
+		log.Println(err)
+		return ""
 	}
 	distanceMeters := float64(steps) * stepLength
 	distanceKm := distanceMeters / mInKm
 
-	switch {
-	case spentcalories.TrainingInfo() == "ходьба":
-		calories := spentcalories.WalkingSpentCalories()
-		return fmt.Sprintf("Количество шагов: %d.\nДистанция составила: %.2f км.\nВы сожгли %.2f ккал.", steps, distanceKm, calories)
-
-	case spentcalories.TrainingInfo() == "бег":
-		calories := spentcalories.RunningSpentCalories()
-		return fmt.Sprintf("Количество шагов: %d.\nДистанция составила: %.2f км.\nВы сожгли %.2f ккал.", steps, distanceKm, calories)
-
+	calories, err := spentcalories.WalkingSpentCalories(steps, weight, height, duration)
+	if err != nil {
+		log.Println(err)
+		return fmt.Sprintf("%v", err)
 	}
+
+	return fmt.Sprintf("Количество шагов: %d.\nДистанция составила %.2f км.\nВы сожгли %.2f ккал.\n", steps, distanceKm, calories)
+
 }
