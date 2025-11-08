@@ -21,23 +21,23 @@ func parsePackage(data string) (int, time.Duration, error) {
 
 	info := strings.Split(data, ",")
 	if len(info) != 2 {
-		return 0, 0, errors.New("неверный формат данных. Ожидается: шаги,время")
+		return 0, 0, errors.New("wrong data format. Expecting: steps, time")
 	}
 	stepsInfo := info[0]
 	steps, err := strconv.Atoi(stepsInfo)
 	if err != nil {
-		return 0, 0, fmt.Errorf("%v", err)
+		return 0, 0, err
 	}
 	if steps <= 0 {
-		return 0, 0, fmt.Errorf("%v", err)
+		return 0, 0, fmt.Errorf("steps less or equal zero%w", err)
 	}
 	durationInfo := info[1]
 	duration, err := time.ParseDuration(durationInfo)
 	if err != nil {
-		return 0, 0, fmt.Errorf("%v", err)
+		return 0, 0, err
 	}
 	if duration <= 0 {
-		return 0, 0, fmt.Errorf("%v", err)
+		return 0, 0, fmt.Errorf("duration less or equal zero%w", err)
 	}
 	return steps, duration, err
 }
