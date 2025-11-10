@@ -29,7 +29,7 @@ func parsePackage(data string) (int, time.Duration, error) {
 		return 0, 0, err
 	}
 	if steps <= 0 {
-		return 0, 0, fmt.Errorf("steps less or equal zero%w", err)
+		return 0, 0, fmt.Errorf("steps less or equal zero")
 	}
 	durationInfo := info[1]
 	duration, err := time.ParseDuration(durationInfo)
@@ -37,7 +37,7 @@ func parsePackage(data string) (int, time.Duration, error) {
 		return 0, 0, err
 	}
 	if duration <= 0 {
-		return 0, 0, fmt.Errorf("duration less or equal zero%w", err)
+		return 0, 0, fmt.Errorf("duration less or equal zero")
 	}
 	return steps, duration, err
 }
